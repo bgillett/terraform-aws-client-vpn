@@ -44,6 +44,11 @@ variable "subnet_id" {
   type        = string
 }
 
+variable "subnet_ids" {
+  description = "The subnet ID to which we need to associate the VPN Client Connection."
+  type        = list(string)
+}
+
 variable "client_cidr_block" {
   description = "VPN CIDR block, must not overlap with VPC CIDR. Client cidr block must be at least a /22 range."
   type        = string

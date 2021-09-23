@@ -99,12 +99,12 @@ resource "aws_ec2_client_vpn_endpoint" "client_vpn" {
     cloudwatch_log_stream = aws_cloudwatch_log_stream.client_vpn.name
   }
 
-  provisioner "local-exec" {
-    environment = merge(local.provisioner_base_env, {
-      "CLIENT_VPN_ID" = self.id
-    })
-    command = "${path.module}/scripts/authorize_client.sh"
-  }
+//  provisioner "local-exec" {
+//    environment = merge(local.provisioner_base_env, {
+//      "CLIENT_VPN_ID" = self.id
+//    })
+//    command = "${path.module}/scripts/authorize_client.sh"
+//  }
 
   tags = {
     Name = var.vpn_name
@@ -128,9 +128,17 @@ resource "null_resource" "export_clients_vpn_config" {
   }
 }
 
-resource "aws_ec2_client_vpn_network_association" "client_vpn" {
+resource "aws_ec2_client_vpn_authorization_rule" "example" {
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.client_vpn.id
-  subnet_id              = var.subnet_id
+  target_network_cidr    = local.provisioner_base_env.TARGET_CIDR
+  authorize_all_groups   = true
+}
+
+resource "aws_ec2_client_vpn_network_association" "client_vpn" {
+  count = length(var.subnet_ids) > 0 ? length(var.subnet_ids) : 0
+
+  client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.client_vpn.id
+  subnet_id              = var.subnet_ids
 }
 
 resource "aws_cloudwatch_log_group" "client_vpn" {
