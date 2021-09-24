@@ -3,25 +3,25 @@ variable "region" {
   type        = string
 }
 
-variable "env" {  
+variable "env" {
   description = "The environment (e.g. prod, dev, stage)"
   type        = string
   default = "prod"
 }
 
-variable "clients" {  
+variable "clients" {
   description = "A list of client certificate name"
   type        = list(string)
   default = ["client"]
 }
 
-variable "cert_issuer" { 
+variable "cert_issuer" {
   description = "Common Name for CA Certificate"
   type        = string
   default = "CA"
 }
 
-variable "cert_server_name" { 
+variable "cert_server_name" {
   description = "Name for the Server Certificate"
   type        = string
   default = "Server"
@@ -29,20 +29,20 @@ variable "cert_server_name" {
 
 variable "aws_tenant_name" {
   description = "Name for the AWS Tenant"
-  type        = string 
+  type        = string
   default = "AWS"
 }
 
 variable "key_save_folder" {
   description = "Where to store keys (relative to pki folder)"
-  type        = string 
+  type        = string
   default     = "clientvpn_keys"
 }
 
-variable "subnet_id" {
-  description = "The subnet ID to which we need to associate the VPN Client Connection."
-  type        = string
-}
+//variable "subnet_id" {
+//  description = "The subnet ID to which we need to associate the VPN Client Connection."
+//  type        = string
+//}
 
 variable "subnet_ids" {
   description = "The subnet ID to which we need to associate the VPN Client Connection."
@@ -117,4 +117,20 @@ variable "saml_provider_arn" {
   description = "The ARN of the IAM SAML identity provider if type is federated-authentication"
   type        = string
   default     = null
+}
+
+//variable "self_service_portal" {
+//  description = "Turn on or off the self service portal"
+//  default = enabled
+//}
+
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default     = {}
+}
+
+variable security_groups {
+  description = "security groups to associate vpn clients with"
+  default = null
 }

@@ -81,6 +81,7 @@ resource "aws_ec2_client_vpn_endpoint" "client_vpn" {
   client_cidr_block      = var.client_cidr_block
   split_tunnel           = true
   dns_servers            = var.dns_servers
+  self_service_portal    = "enabled"
 
   lifecycle {
     ignore_changes = [server_certificate_arn, authentication_options]
@@ -99,16 +100,16 @@ resource "aws_ec2_client_vpn_endpoint" "client_vpn" {
     cloudwatch_log_stream = aws_cloudwatch_log_stream.client_vpn.name
   }
 
-//  provisioner "local-exec" {
-//    environment = merge(local.provisioner_base_env, {
-//      "CLIENT_VPN_ID" = self.id
-//    })
-//    command = "${path.module}/scripts/authorize_client.sh"
-//  }
+  //  provisioner "local-exec" {
+  //    environment = merge(local.provisioner_base_env, {
+  //      "CLIENT_VPN_ID" = self.id
+  //    })
+  //    command = "${path.module}/scripts/authorize_client.sh"
+  //  }
 
-  tags = {
-    Name = var.vpn_name
-  }
+  tags = merge(
+  var.tags
+  )
 }
 
 resource "null_resource" "export_clients_vpn_config" {
@@ -138,7 +139,8 @@ resource "aws_ec2_client_vpn_network_association" "client_vpn" {
   count = length(var.subnet_ids) > 0 ? length(var.subnet_ids) : 0
 
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.client_vpn.id
-  subnet_id              = var.subnet_ids
+  subnet_id              = var.subnet_ids[count.index]
+  security_groups  = var.security_groups
 }
 
 resource "aws_cloudwatch_log_group" "client_vpn" {
